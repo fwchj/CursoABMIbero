@@ -1,20 +1,55 @@
-breed[coches coche]
+;; Ejemplo introductorio (sin ABM) para ilustrar como agregar valores a un contexto
+;; Autor: Florian Chavez-Juarez
+
+;; Definimos que cada patch tiene una variable llamada capital
+patches-own[capital]
+
+to inicio-file
+  clear-all ;borramos todo lo que hay
+  file-open "smallWorld3.txt" ; importamos la base de datos
+  foreach sort patches [ p ->
+    ask p [
+      let value file-read ;aqui obtenemos el dato de la base
+      let colorCode "black"
+
+      ; en caso de encontrar el valor de 1, ponemos el color 15, la etiqueta P (poor) y el capital 1000
+      if value = 1 [ set colorCode 15
+      set plabel "P"
+      set capital 1000]
+
+      ; en caso de encontrar el valor de 2, ponemos el color 24, la etiqueta M (middle) y el capital 1500
+      if value = 2 [ set colorCode 24
+      set plabel "M"
+      set capital 1500]
+      ; en caso de encontrar el valor de 3, ponemos el color 45, la etiqueta M (middle) y el capital 2000
+      if value = 3 [ set colorCode 45
+      set plabel "M"
+      set plabel-color 0
+      set capital 2000]
+      ; en caso de encontrar el valor de 2, ponemos el color 64 la etiqueta R (rich) y el capital 3000
+      if value = 4 [ set colorCode 64
+      set plabel "R"
+      set capital 3000]
+      set pcolor colorCode
 
 
-to inicio
-  clear-all
-  reset-ticks
-  create-coches 50 [setxy random-xcor random-ycor]
+    ]
+  ]
+
+
+
+
+  file-close
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-647
-448
+493
+294
 -1
 -1
-13.0
+25.0
 1
 10
 1
@@ -24,10 +59,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
+-5
+5
+-5
+5
 0
 0
 1
@@ -35,12 +70,12 @@ ticks
 30.0
 
 BUTTON
-17
-19
-80
-52
-Inicio
+32
+51
+95
+84
 inicio
+inicio-file
 NIL
 1
 T

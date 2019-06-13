@@ -1,3 +1,9 @@
+;; Ejemplo introductorio (sin ABM) para ilustrar como se puede crear el entorno (en Netlogo: patches)
+;; Autor: Florian Chavez-Juarez
+
+
+
+;; Hacer todo manual trabajando con las coordenadas
 to inicio-manual
   ask patches[
    let suma ( pxcor + pycor)
@@ -7,6 +13,7 @@ to inicio-manual
   ]
 end
 
+; Importar una imagen que netlogo convierte después al contexto (con cierta imprecisión)
 to inicio-imagen
   import-pcolors-rgb "sugarscapeRed.png"
 end
@@ -14,24 +21,26 @@ to inicio-imagen2
   import-pcolors-rgb "labirinto3.png"
 end
 
+; Crear un simple archivo con una matriz de numeros que se puede usar para poner el mundo
 to inicio-file
-  file-open "sugar-map.txt"
+  file-open "smallWorld2.txt"
   foreach sort patches [ p ->
     ask p [
-      let max-psugar file-read
-      let psugar max-psugar
-      set pcolor (yellow + 4.9 - psugar)
+      let colorCode file-read
+      set pcolor colorCode
 
     ]
   ]
   file-close
+
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-647
-448
+548
+349
 -1
 -1
 10.0

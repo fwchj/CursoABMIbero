@@ -1,37 +1,9 @@
-;; Ejemplo introductorio: definir un tipo de agentes y agregarlos al contexto
-;; Autor: Florian Chavez-Juarez
-
-breed[coches coche] ; here we define the types of agents
-coches-own[ precio	numero-de-puertas	]
-
-to inicio
-  clear-all ; clear all existings elements
-  reset-ticks ; reset the ticks
-  create-coches 50 [ ; create 50 cars
-    setxy random-xcor random-ycor ; ponerlos en un lugar aleatorio en el espacio
-    set precio (100000 + random 200000)    ; poner el precio aleatoriamente entre 100K y 300K
-    set numero-de-puertas (2 + random 3)   ; poner el numero de puertas aleatorio entre 2 y 4
-    set label numero-de-puertas            ; poner una etiqueta al coche (visualization)
-    set label-color blue                   ; poner la etiqueta en azul
-    set shape "car"                        ; poner el agente como 'coche' en el espacio (visualizacion)
-    set color red                          ; poner el coche en rojo
-    set size 2                             ; aumentar el tamano del icono
-  ]
-
-  ask patches[            ; pregutamos a todos los patches de
-    set pcolor yellow     ; cambiar su color a amarillo
-  ]
-end ; end de inicio
-
-
-to go
-  ask coches[
- 				right -10 + random 20
-
-				forward 1 ; move forward by one unit in the current heading
-			]
+extensions [ nw ]
+to setup
+  clear-all
+  nw:generate-watts-strogatz turtles links 25 2 0.1 [ set color red
+  setxy random-xcor random-ycor]
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -47,8 +19,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
@@ -61,29 +33,12 @@ ticks
 30.0
 
 BUTTON
-17
-19
-80
-52
-Inicio
-inicio
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-105
-20
-168
-53
-Go
-go
+30
+13
+93
+46
+setup
+setup
 NIL
 1
 T

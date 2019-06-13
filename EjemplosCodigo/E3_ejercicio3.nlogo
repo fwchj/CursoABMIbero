@@ -1,38 +1,68 @@
-to inicio
+
+breed[houses house]
+breed[humans human]
+directed-link-breed[streets street]
+
+humans-own[speed]
+
+to setup
   clear-all
-  reset-ticks
-  create-turtles 5 [
-    setxy random-xcor random-ycor
-    set color black
-    pen-down
-  ]
-  ask patches[
-    set pcolor red
-  ]
-  ask one-of patches[
-    set pcolor blue
-  ]
-end
+  ;; Create the houses
+  create-houses 10 [setxy random-xcor random-ycor
+    set color red
+    set shape "house"]
 
-to go
-
-  ask turtles[
-    let target one-of patches with [pcolor = blue]
-    set heading towards target
-    forward 1
+  ;; Create streets
+  ask houses[
+    let num-links random 3
+    repeat num-links[
+      create-street-to one-of other houses
     ]
-  ask patches with [pcolor = blue][
-    if (count turtles-on self) > 0 [
-      set pcolor yellow
-      ask one-of patches [
-        set pcolor blue
-      ]
-     ]
   ]
 
+  ask patches[
+    if (count houses-on self > 0) [
+
+      sprout-humans 1 [set color yellow
+      set shape "dot"]
+
+    ]
+  ]
+
+  reset-ticks
+end
+
+to step
+  tick
+  ask humans[
+    set speed 0.1
+  ]
+
+  ask houses[
+    ifelse (count out-street-neighbors > 0) [
+      let possible-destinations out-street-neighbors
+      ask humans-here[
+      let destination one-of possible-destinations
+      let dest e
+      set heading towards destination
+      ]
+    ]
+    [ask humans-here[
+      set speed 0
+    ]
+  ]
+  ]
+
+  ask humans[
+    forward speed
+  ]
+
+  ifelse (any? humans with [speed > 0 ]) [
+  ][stop]
 
 
 end
+
 
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -63,12 +93,12 @@ ticks
 30.0
 
 BUTTON
-15
-34
-78
-67
-start
-inicio
+18
+27
+81
+60
+Start
+setup
 NIL
 1
 T
@@ -80,12 +110,12 @@ NIL
 1
 
 BUTTON
-91
-34
-154
-67
-go
-go
+90
+27
+153
+60
+step
+step
 T
 1
 T

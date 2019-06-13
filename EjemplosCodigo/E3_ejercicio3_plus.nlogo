@@ -1,31 +1,65 @@
-;; Ejemplo introductorio: definir un tipo de agentes y agregarlos al contexto
-;; Autor: Florian Chavez-Juarez
+breed[houses house]
+breed[humans human]
+directed-link-breed[streets street]
 
-breed[coches coche] ; here we define the types of agents
-coches-own[ speed ]
+humans-own[speed]
 
-to inicio
-  clear-all ; clear all existings elements
-  reset-ticks ; reset the ticks
-  create-coches 1 [ ; create 50 cars
-    setxy 0 0 ; ponerlos en un lugar aleatorio en el espacio
-    set speed 0.1
-    set shape "dot"                        ; poner el agente como 'coche' en el espacio (visualizacion)
-    set color red                          ; poner el coche en rojo
-    set size 2                             ; aumentar el tamano del icono
+to setup
+  clear-all
+  ;; Create the houses
+  create-houses num-houses [setxy random-xcor random-ycor
+    set color red
+    set shape "house"]
+
+  ;; Create streets
+  ask houses[
+    let num-links random max-streets-per-house
+    repeat num-links[
+      create-street-to one-of other houses
+    ]
   ]
 
- end ; end de inicio
+  ask patches[
+    if (count houses-on self > 0) [
+
+      sprout-humans 1 [set color yellow
+      set shape "dot"]
+
+    ]
+  ]
+
+  reset-ticks
+end
+
+to step
+  tick
+  ask humans[
+    set speed 0.1
+  ]
+
+  ask houses[
+    ifelse (count out-street-neighbors > 0) [
+      let possible-destinations out-street-neighbors
+      ask humans-here[
+      let destination one-of possible-destinations
+      let dest e
+      set heading towards destination
+      ]
+    ]
+    [ask humans-here[
+      set speed 0
+    ]
+  ]
+  ]
+
+  ask humans[
+    forward speed
+  ]
+
+  ifelse (any? humans with [speed > 0 ]) [
+  ][stop]
 
 
-to go
-  ask coches[
- 				right 25
-        set speed (speed + 0.05)
-        set pen-size 3
-        pen-down
-				forward speed ; move forward by one unit in the current heading
-			]
 end
 
 @#$#@#$#@
@@ -43,8 +77,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
@@ -57,12 +91,12 @@ ticks
 30.0
 
 BUTTON
-17
-19
-80
-52
-Inicio
-inicio
+7
+29
+70
+62
+Start
+setup
 NIL
 1
 T
@@ -74,13 +108,89 @@ NIL
 1
 
 BUTTON
-105
-20
-168
-53
-Go
-go
+71
+29
+134
+62
+step
+step
 T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+14
+80
+186
+113
+num-houses
+num-houses
+0
+100
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+15
+124
+187
+157
+max-streets-per-house
+max-streets-per-house
+0
+10
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+19
+182
+121
+227
+Walking humans
+count humans with [speed > 0]
+17
+1
+11
+
+PLOT
+661
+78
+861
+228
+Number of humans
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count humans with [speed > 0]"
+
+BUTTON
+139
+29
+202
+62
+step
+step
+NIL
 1
 T
 OBSERVER
@@ -436,6 +546,26 @@ NetLogo 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="2" sequentialRunOrder="false" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>step</go>
+    <exitCondition>ticks &gt; 50000</exitCondition>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="max-streets-per-house">
+      <value value="1"/>
+      <value value="2"/>
+      <value value="3"/>
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-houses">
+      <value value="5"/>
+      <value value="10"/>
+      <value value="50"/>
+      <value value="100"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default

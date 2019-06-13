@@ -1,33 +1,56 @@
-;; Ejemplo introductorio (sin ABM) para ilustrar como se definen variables y como se definen y usan funciones.
-;; Autor: Florian Chavez-Juarez
 
-;; Funcion que se ejecuta al presionar el boton 'setup' en la interfaz
-to setup
-  let a 5  ; definimos una variable 'a' y le asignamos el valor 5
-  let b 6  ; definimos una variable 'b' y le asignamos el valor 6
-  let c (suma a b) ; aqui usamos una funcion que regresa un valor y guardamos el valor en 'c'
-  print(c)  ; imprimimos el valor de 'c' en la consola (ventana hasta abajo en la interfaz)
+undirected-link-breed[friendships friendship]
+directed-link-breed[debts debt]
+friendships-own[duration]
+debts-own[amount]
 
-  suma2 a c  ; aqui usamos otra funcion que i
 
-  print(getRandomValue)
+;; Creamos unos vinculos manuales
+to inicio-undirected
+  clear-all
+  reset-ticks
 
+  create-turtles 1 [setxy -5 -5] ; agente 0
+  create-turtles 1 [setxy -5 5]  ; agente 1
+  create-turtles 1 [setxy 5 5]   ; agente 2
+  create-turtles 1 [setxy 5 -5]  ; agente 3
+
+  ; generamos un vinculo rojo y fuerte entre el agente 1 y 3
+  ask turtle 1 [create-friendship-with turtle 3
+    ask friendship-with turtle 3 [
+      set label 6
+      set duration 5
+    set color red
+    set thickness 0.5]
+    ]
+
+  ; generamos un vinculo basico entre el agente 3 y 0
+  ask turtle 3 [create-friendship-with turtle 0]
 end
 
 
-; Aqui definimos una funcion que toma 2 argumentos y que regresa un valor
-to-report suma [a b]
-  let c a + b
-  report c
-end
+;; Lo mismo pero ahora con links dirigidos
+to inicio-directed
+   clear-all
+  reset-ticks
 
-; Aqui definimos una funcion que toma 2 argumentos pero no regresa nada (sino lo imprime)
-to suma2 [a b]
-  print(a + b)
-end
+  create-turtles 1 [setxy -5 -5] ; agente 0
+  create-turtles 1 [setxy -5 5]  ; agente 1
+  create-turtles 1 [setxy 5 5]   ; agente 2
+  create-turtles 1 [setxy 5 -5]  ; agente 3
 
-to-report getRandomValue
- report random 500
+  ; generamos un vinculo rojo y fuerte entre el agente 1 y 3
+  ask turtle 1 [create-debt-to turtle 3
+    ask out-debt-to turtle 3 [
+      set amount 5000
+      set label amount
+      set color red
+      set thickness 0.2]
+    ]
+
+  ; generamos un vinculo basico entre el agente 3 y 0
+  ask turtle 3 [create-debt-to turtle 0]
+
 end
 
 
@@ -61,12 +84,29 @@ ticks
 30.0
 
 BUTTON
-28
 26
-92
-59
-Setup
-setup
+41
+151
+74
+inicio (friendship)
+inicio-undirected
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+28
+86
+125
+119
+inicio-deuda
+inicio-directed
 NIL
 1
 T
