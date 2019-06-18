@@ -35,15 +35,22 @@ to inicio-file
 
 
 end
+
+
+to inicio-random
+ask patches[
+    set pcolor random-normal 50 10
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+229
 10
-548
-349
+866
+648
 -1
 -1
-10.0
+19.061
 1
 10
 1
@@ -121,6 +128,23 @@ BUTTON
 199
 import-from-file
 inicio-file
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+32
+226
+160
+259
+inicio-random
+inicio-random
 NIL
 1
 T

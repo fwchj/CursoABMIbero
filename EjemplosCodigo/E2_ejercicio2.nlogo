@@ -27,7 +27,6 @@ to go
 				forward speed ; move forward by one unit in the current heading
 			]
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -80,7 +79,7 @@ BUTTON
 53
 Go
 go
-T
+NIL
 1
 T
 OBSERVER

@@ -15,7 +15,7 @@ to inicio
     set label numero-de-puertas            ; poner una etiqueta al coche (visualization)
     set label-color blue                   ; poner la etiqueta en azul
     set shape "car"                        ; poner el agente como 'coche' en el espacio (visualizacion)
-    set color red                          ; poner el coche en rojo
+    set color blue                          ; poner el coche en rojo
     set size 2                             ; aumentar el tamano del icono
     set label xcor
   ]
@@ -24,7 +24,6 @@ to inicio
     set pcolor yellow     ; cambiar su color a amarillo
   ]
 end ; end de inicio
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
