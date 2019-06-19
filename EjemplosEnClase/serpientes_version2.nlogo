@@ -8,6 +8,7 @@
 breed[serpientes serpiente]
 serpientes-own[energia max-energia] ; cada serpiente tiene un nivel de energia actual y el maximo nivel de energia
 
+globals[numero-muertos numero-nuevos]                ; definimos una variable global para contar los muertos
 
 to inicio
   clear-all                             ; reseteamos todo
@@ -39,7 +40,9 @@ to go
     set energia energia - consumo-por-tick       ; reducimos en nivel de energia por 'consumo-por-tick'
     set label precision energia 2                ; actualizamos la etiqueta
 
-    if (energia < 0 ) [ die ]                    ; si la energia es negativa, se muere la serpiente
+    if (energia < 0 ) [
+      set numero-muertos numero-muertos + 1
+      die ]                    ; si la energia es negativa, se muere la serpiente
 
 
 
@@ -88,13 +91,13 @@ if count (serpientes with [energia < max-energia]) = 0 [stop]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+260
 10
-647
-448
+779
+530
 -1
 -1
-13.0
+15.5
 1
 10
 1
@@ -149,10 +152,10 @@ NIL
 1
 
 SLIDER
-12
-157
-206
-190
+6
+139
+200
+172
 numero-serpientes
 numero-serpientes
 0
@@ -164,10 +167,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-15
-210
-192
-243
+6
+176
+198
+209
 cantidad-comida
 cantidad-comida
 0
@@ -179,10 +182,10 @@ NIL
 HORIZONTAL
 
 PLOT
-1070
-36
-1614
-372
+831
+77
+1375
+413
 Counter
 NIL
 NIL
@@ -196,12 +199,13 @@ true
 PENS
 "Snake count" 1.0 0 -16777216 true "" "plot count serpientes"
 "Total size" 1.0 0 -2674135 true "" "plot sum [size] of serpientes"
+"Numero muertos" 1.0 0 -7500403 true "" "plot numero-muertos"
 
 SLIDER
-14
-248
-195
-281
+6
+219
+197
+252
 consumo-por-tick
 consumo-por-tick
 0
@@ -230,10 +234,10 @@ NIL
 1
 
 SLIDER
--2
-308
-211
-341
+5
+259
+218
+292
 ganancia-por-comida
 ganancia-por-comida
 0
@@ -244,42 +248,28 @@ ganancia-por-comida
 NIL
 HORIZONTAL
 
+MONITOR
+829
+19
+976
+64
+NUmero de muertos
+numero-muertos
+17
+1
+11
+
 @#$#@#$#@
-## WHAT IS IT?
+## QUE HACE EL MODELO? 
 
-(a general understanding of what the model is trying to show or explain)
-
-## HOW IT WORKS
-
-(what rules the agents use to create the overall behavior of the model)
-
-## HOW TO USE IT
-
-(how to use the model, including a description of each of the items in the Interface tab)
-
-## THINGS TO NOTICE
-
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
-
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+Un modelo muy básico de serpientes que buscan comida en un espacio. Consumen energia al moverse y cuando llegan a la comida, sube su nivel de energia. A partir de un cierto nivel de consumo, hay procreacion. Si ya no tienen energia, se mueren. 
 
 ## RELATED MODELS
+Predator Prey
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
 
 ## CREDITS AND REFERENCES
-
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Modelo elaborado durante el curso de Introducción a Modelos basados en Agentes en la Universidad Iberoamericana de la ciudad de México, Junio 2019. 
 @#$#@#$#@
 default
 true
