@@ -7,6 +7,7 @@ coches-own[ precio	numero-de-puertas	]
 to inicio
   clear-all ; clear all existings elements
   reset-ticks ; reset the ticks
+
   create-coches 50 [ ; create 50 cars
     setxy random-xcor random-ycor ; ponerlos en un lugar aleatorio en el espacio
     set precio (100000 + random 200000)    ; poner el precio aleatoriamente entre 100K y 300K
@@ -14,16 +15,15 @@ to inicio
     set label numero-de-puertas            ; poner una etiqueta al coche (visualization)
     set label-color blue                   ; poner la etiqueta en azul
     set shape "car"                        ; poner el agente como 'coche' en el espacio (visualizacion)
-    set color red                          ; poner el coche en rojo
+    set color blue                          ; poner el coche en rojo
     set size 2                             ; aumentar el tamano del icono
+    set label xcor
   ]
 
   ask patches[            ; pregutamos a todos los patches de
     set pcolor yellow     ; cambiar su color a amarillo
   ]
 end ; end de inicio
-
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210

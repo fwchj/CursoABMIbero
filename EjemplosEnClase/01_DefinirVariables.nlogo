@@ -1,56 +1,21 @@
-;; Ejemplo introductorio (sin ABM) para ilustrar como se puede crear el entorno (en Netlogo: patches)
-;; Autor: Florian Chavez-Juarez
-
-
-
-;; Hacer todo manual trabajando con las coordenadas
-to inicio-manual
-  ask patches[
-   let suma ( pxcor + pycor)
-   ifelse (remainder suma 2 = 0) [
-     set pcolor white]
-    [set pcolor blue]
-  ]
-end
-
-; Importar una imagen que netlogo convierte después al contexto (con cierta imprecisión)
-to inicio-imagen
-  import-pcolors-rgb "sugarscapeRed.png"
-end
-to inicio-imagen2
-  import-pcolors-rgb "labirinto3.png"
-end
-
-; Crear un simple archivo con una matriz de numeros que se puede usar para poner el mundo
-to inicio-file
-  file-open "smallWorld2.txt"
-  foreach sort patches [ p ->
-    ask p [
-      let colorCode file-read
-      set pcolor colorCode
-
-    ]
-  ]
-  file-close
-
-
-end
-
-
-to inicio-random
-ask patches[
-    set pcolor random-normal 50 10
-  ]
+; Definimos dos variables y luego restamos una de la otra
+; Finalmente imprimios todo en la ventana
+to calcular
+ let a 5
+ let b 7
+ let c b - a ; aqui hago la diferencia
+  print c
+  show c
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-229
+210
 10
-866
-648
+647
+448
 -1
 -1
-19.061
+13.0
 1
 10
 1
@@ -71,80 +36,12 @@ ticks
 30.0
 
 BUTTON
-19
-23
-121
-56
-inicio-manual
-inicio-manual
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-22
-70
-124
-103
-inicio-imagen
-inicio-imagen
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-22
-116
-131
-149
-inicio-imagen2
-inicio-imagen2
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-24
-166
-141
-199
-import-from-file
-inicio-file
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-32
-226
-160
-259
-inicio-random
-inicio-random
+17
+33
+107
+67
+Calcular
+calcular
 NIL
 1
 T

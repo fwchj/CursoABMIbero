@@ -1,56 +1,26 @@
-;; Ejemplo introductorio (sin ABM) para ilustrar como se puede crear el entorno (en Netlogo: patches)
-;; Autor: Florian Chavez-Juarez
+to inicio               ; Definimos la funcion que resetea todo y agrega agentes
+  clear-all             ; Quitamos todo lo anterior (simulacion anterior)
+  create-turtles 5      ; Generamos 5 agentes (tortugas) en el centro (0,0)
+  reset-ticks           ; Reseteamos los ticks
+end
 
+to avanzar                   ; Definimos una funcion para avanzar en cada tick
+  ask turtles[               ; pedimos a TODAS las tortugas de hacer lo que viene en []
+    set heading random 360   ; Elegimos aleatoriamente la orientacion entre 0 y 359 grados
+    forward 1                ; Avanzamos una unidad
 
-
-;; Hacer todo manual trabajando con las coordenadas
-to inicio-manual
-  ask patches[
-   let suma ( pxcor + pycor)
-   ifelse (remainder suma 2 = 0) [
-     set pcolor white]
-    [set pcolor blue]
   ]
 end
 
-; Importar una imagen que netlogo convierte después al contexto (con cierta imprecisión)
-to inicio-imagen
-  import-pcolors-rgb "sugarscapeRed.png"
-end
-to inicio-imagen2
-  import-pcolors-rgb "labirinto3.png"
-end
-
-; Crear un simple archivo con una matriz de numeros que se puede usar para poner el mundo
-to inicio-file
-  file-open "smallWorld2.txt"
-  foreach sort patches [ p ->
-    ask p [
-      let colorCode file-read
-      set pcolor colorCode
-
-    ]
-  ]
-  file-close
-
-
-end
-
-
-to inicio-random
-ask patches[
-    set pcolor random-normal 50 10
-  ]
-end
 @#$#@#$#@
 GRAPHICS-WINDOW
-229
+210
 10
-866
-648
+647
+448
 -1
 -1
-19.061
+13.0
 1
 10
 1
@@ -71,12 +41,12 @@ ticks
 30.0
 
 BUTTON
-19
-23
-121
-56
-inicio-manual
-inicio-manual
+71
+67
+145
+100
+Iniciar
+inicio
 NIL
 1
 T
@@ -88,64 +58,13 @@ NIL
 1
 
 BUTTON
-22
-70
-124
-103
-inicio-imagen
-inicio-imagen
-NIL
-1
+66
+112
+153
+145
+avanzar
+avanzar
 T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-22
-116
-131
-149
-inicio-imagen2
-inicio-imagen2
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-24
-166
-141
-199
-import-from-file
-inicio-file
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-32
-226
-160
-259
-inicio-random
-inicio-random
-NIL
 1
 T
 OBSERVER

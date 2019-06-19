@@ -1,56 +1,103 @@
-;; Ejemplo introductorio (sin ABM) para ilustrar como se puede crear el entorno (en Netlogo: patches)
-;; Autor: Florian Chavez-Juarez
+; Version 2 de nuestro modelo de clase donde agregamos varios elementos (con respecto a la version 1):
+; - La velocidad depende del nivel de energia
+; - Hay procreacion
+; - Agregamos parametros y graficas
+; - Las serpientes consumen energia caminando
 
+; Definimos el tipo de agente (serpiente)
+breed[serpientes serpiente]
+serpientes-own[energia max-energia] ; cada serpiente tiene un nivel de energia actual y el maximo nivel de energia
 
+globals[numero-muertos numero-nuevos]                ; definimos una variable global para contar los muertos
 
-;; Hacer todo manual trabajando con las coordenadas
-to inicio-manual
-  ask patches[
-   let suma ( pxcor + pycor)
-   ifelse (remainder suma 2 = 0) [
-     set pcolor white]
-    [set pcolor blue]
+to inicio
+  clear-all                             ; reseteamos todo
+  reset-ticks                           ; ponemos el contador de ticks a cero
+
+  ; Iniciamos las serpientes
+  create-serpientes numero-serpientes [  ; creamos serpiente (el numero indicado por el usuario)
+    set color green                      ; cambiaos el color a verde
+    setxy random-xcor random-ycor        ; los posicionamos aleatoriamente en el mundo
+    set shape "caterpillar"              ; les ponemos forma de 'serpiente'
+    set size 3                           ; definimos un tamanio inicial
+    set max-energia 10                   ; definimos el nivel de energia maxima => procreacion
+    set energia 5                        ; nivel de energia inicial de cada serpiente
+    set label energia                    ; agregamos una etiqueta de la energia
+  ]
+
+  ask n-of cantidad-comida patches[     ; definimos 'cantidad-comida' de patches como comida (color amarillo)
+    set pcolor yellow
   ]
 end
 
-; Importar una imagen que netlogo convierte después al contexto (con cierta imprecisión)
-to inicio-imagen
-  import-pcolors-rgb "sugarscapeRed.png"
-end
-to inicio-imagen2
-  import-pcolors-rgb "labirinto3.png"
-end
+to go
+  tick                                           ; agregamos una unidad al contador de ticks
+  ask serpientes [                               ; solicitamos una accion a todas las serpientes
+    let comida min-one-of (patches with [pcolor = yellow]) [distance myself] ; identificar la comida mas cercana
+    set heading towards comida                   ; dirigirse hacia la comida
+    forward 0.05 * energia                       ; caminar hacia la comida (velocidad en funcion del nivel de energia)
 
-; Crear un simple archivo con una matriz de numeros que se puede usar para poner el mundo
-to inicio-file
-  file-open "smallWorld2.txt"
-  foreach sort patches [ p ->
-    ask p [
-      let colorCode file-read
-      set pcolor colorCode
+    set energia energia - consumo-por-tick       ; reducimos en nivel de energia por 'consumo-por-tick'
+    set label precision energia 2                ; actualizamos la etiqueta
+
+    if (energia < 0 ) [
+      set numero-muertos numero-muertos + 1
+      die ]                    ; si la energia es negativa, se muere la serpiente
+
+
+
+    if ([pcolor] of patch-here = yellow) [       ; en caso de estar en un patch con comida, agregamos energia
+      set energia energia + ganancia-por-comida  ; agregamos la energia a la serpiente
+      set label energia                          ; actualizamos la etiqueta
+
+      ask patch-here[                            ; ponemos el patch en negro (ya no hay comida)
+        set pcolor black
+      ]
+      ask one-of patches[
+        set pcolor yellow                        ; seleccionamos otro patch como comida
+      ]
+
+      ; Ver si hay procreacion
+      if energia >= max-energia [                ; ver si la condicion de procreacion se satisface
+        set energia energia / 2                  ; dividimos la energia en 2
+        let energiaActual energia
+        ask patch-here[
+          sprout-serpientes 1 [                  ; generamos una nueva serpiente y ponemos los valores iniciales
+            forward 3
+            set shape "caterpillar"
+            set energia energiaActual
+            set size (2 + 0.5 * energia)
+            set label energia
+            set color green
+          ]
+      ]
+      ]
 
     ]
+
+    set size (2 + 0.5 * energia)               ; actualizamos el tamaño de la serpiente
+
+
   ]
-  file-close
 
 
-end
 
 
-to inicio-random
-ask patches[
-    set pcolor random-normal 50 10
-  ]
+if count (serpientes with [energia < max-energia]) = 0 [stop]
+
+
+
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-229
+260
 10
-866
-648
+779
+530
 -1
 -1
-19.061
+15.5
 1
 10
 1
@@ -71,12 +118,12 @@ ticks
 30.0
 
 BUTTON
-19
-23
-121
-56
-inicio-manual
-inicio-manual
+21
+45
+95
+78
+Iniciar
+inicio
 NIL
 1
 T
@@ -88,12 +135,94 @@ NIL
 1
 
 BUTTON
-22
-70
-124
-103
-inicio-imagen
-inicio-imagen
+28
+90
+91
+123
+Go
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+6
+139
+200
+172
+numero-serpientes
+numero-serpientes
+0
+10
+8.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+6
+176
+198
+209
+cantidad-comida
+cantidad-comida
+0
+30
+30.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+831
+77
+1375
+413
+Counter
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Snake count" 1.0 0 -16777216 true "" "plot count serpientes"
+"Total size" 1.0 0 -2674135 true "" "plot sum [size] of serpientes"
+"Numero muertos" 1.0 0 -7500403 true "" "plot numero-muertos"
+
+SLIDER
+6
+219
+197
+252
+consumo-por-tick
+consumo-por-tick
+0
+2
+0.1
+0.1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+106
+90
+169
+123
+go
+go
 NIL
 1
 T
@@ -104,93 +233,43 @@ NIL
 NIL
 1
 
-BUTTON
-22
-116
-131
-149
-inicio-imagen2
-inicio-imagen2
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-24
-166
-141
-199
-import-from-file
-inicio-file
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-32
-226
-160
+SLIDER
+5
 259
-inicio-random
-inicio-random
-NIL
+218
+292
+ganancia-por-comida
+ganancia-por-comida
+0
+3
+2.0
+0.25
 1
-T
-OBSERVER
 NIL
-NIL
-NIL
-NIL
+HORIZONTAL
+
+MONITOR
+829
+19
+976
+64
+NUmero de muertos
+numero-muertos
+17
 1
+11
 
 @#$#@#$#@
-## WHAT IS IT?
+## QUE HACE EL MODELO? 
 
-(a general understanding of what the model is trying to show or explain)
-
-## HOW IT WORKS
-
-(what rules the agents use to create the overall behavior of the model)
-
-## HOW TO USE IT
-
-(how to use the model, including a description of each of the items in the Interface tab)
-
-## THINGS TO NOTICE
-
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
-
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+Un modelo muy básico de serpientes que buscan comida en un espacio. Consumen energia al moverse y cuando llegan a la comida, sube su nivel de energia. A partir de un cierto nivel de consumo, hay procreacion. Si ya no tienen energia, se mueren. 
 
 ## RELATED MODELS
+Predator Prey
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
 
 ## CREDITS AND REFERENCES
-
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Modelo elaborado durante el curso de Introducción a Modelos basados en Agentes en la Universidad Iberoamericana de la ciudad de México, Junio 2019. 
 @#$#@#$#@
 default
 true
@@ -248,6 +327,22 @@ Polygon -16777216 true false 162 80 132 78 134 135 209 135 194 105 189 96 180 89
 Circle -7500403 true true 47 195 58
 Circle -7500403 true true 195 195 58
 
+caterpillar
+true
+0
+Polygon -7500403 true true 165 210 165 225 135 255 105 270 90 270 75 255 75 240 90 210 120 195 135 165 165 135 165 105 150 75 150 60 135 60 120 45 120 30 135 15 150 15 180 30 180 45 195 45 210 60 225 105 225 135 210 150 210 165 195 195 180 210
+Line -16777216 false 135 255 90 210
+Line -16777216 false 165 225 120 195
+Line -16777216 false 135 165 180 210
+Line -16777216 false 150 150 201 186
+Line -16777216 false 165 135 210 150
+Line -16777216 false 165 120 225 120
+Line -16777216 false 165 106 221 90
+Line -16777216 false 157 91 210 60
+Line -16777216 false 150 60 180 45
+Line -16777216 false 120 30 96 26
+Line -16777216 false 124 0 135 15
+
 circle
 false
 0
@@ -258,6 +353,13 @@ false
 0
 Circle -7500403 true true 0 0 300
 Circle -16777216 true false 30 30 240
+
+clock
+true
+0
+Circle -7500403 true true 30 30 240
+Polygon -16777216 true false 150 31 128 75 143 75 143 150 158 150 158 75 173 75
+Circle -16777216 true false 135 135 30
 
 cow
 false

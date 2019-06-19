@@ -1,69 +1,115 @@
-;; Ejemplo introductorio (sin ABM) para ilustrar como se puede crear el entorno (en Netlogo: patches)
-;; Autor: Florian Chavez-Juarez
+; Modelo de mercado laboral con enfoque de genero
 
+breed[personas persona]
+breed[empresas empresa]
 
+personas-own[mujer? capacidades preferencias ]
+empresas-own[
+  salario-promedio
+  sector
+  brecha
+  prefencia-mujeres ; Porcentaje de mujeres que quiere contratar (0.5 seria el valor neutro)
+]
 
-;; Hacer todo manual trabajando con las coordenadas
-to inicio-manual
-  ask patches[
-   let suma ( pxcor + pycor)
-   ifelse (remainder suma 2 = 0) [
-     set pcolor white]
-    [set pcolor blue]
+directed-link-breed[contratos contrato]
+contratos-own[salario]
+
+to inicio
+  clear-all
+  reset-ticks
+  resize-world -30 30 -20 20
+
+  ; Generamos empresas
+  create-empresas 10[
+    setxy 0 random-ycor
+    set shape "house"
+    set size 3
+    set salario-promedio 5000 + random 5000
+    set prefencia-mujeres random-float 1
+    set label precision prefencia-mujeres 3
+    set color yellow                                   ; color neutro
+    if (prefencia-mujeres < 0.3) [ set color blue]      ; color para indicar prefencia fuerte para mujeres
+    if (prefencia-mujeres > 0.7) [ set color red]     ; color para indicar prefencia fuerte para hombres
   ]
-end
 
-; Importar una imagen que netlogo convierte después al contexto (con cierta imprecisión)
-to inicio-imagen
-  import-pcolors-rgb "sugarscapeRed.png"
-end
-to inicio-imagen2
-  import-pcolors-rgb "labirinto3.png"
-end
+  ; Generar personas
+  create-personas 100[
+    set mujer? (random 2 = 1)
 
-; Crear un simple archivo con una matriz de numeros que se puede usar para poner el mundo
-to inicio-file
-  file-open "smallWorld2.txt"
-  foreach sort patches [ p ->
-    ask p [
-      let colorCode file-read
-      set pcolor colorCode
-
+    ifelse mujer? [
+      set color red
+      setxy (random-float max-pxcor) random-ycor
+      set size 2
+    ]
+    [
+      set color (93 + random-float 5)
+      setxy (random-float min-pxcor) random-ycor
+      set size 2
     ]
   ]
-  file-close
 
 
-end
+  ; Cada empresa contrata una persona con la probabilidad de genero
+  ask empresas[
+
+    repeat 8[
+      let contrato-mujer? (random-float 1 <= prefencia-mujeres)
+      ifelse contrato-mujer? [
+        if any? personas with [mujer? = true and (count my-in-contratos = 0) ] [
+          create-contrato-to one-of personas with [mujer? = true and (count my-in-contratos = 0) ] [
+            set salario [salario-promedio] of myself
+            set label salario
+           ]
+        ]
+      ] ; end of woman
+      [
+        if any? personas with [mujer? = false and (count my-in-contratos = 0) ] [
+          create-contrato-to one-of personas with [mujer? = false and (count my-in-contratos = 0)] [
+            set salario [salario-promedio] of myself
+            set label salario
+           ]
+        ]
+      ] ; end of man
+
+    ] ; end repeat 8
 
 
-to inicio-random
-ask patches[
-    set pcolor random-normal 50 10
+
   ]
+
+
+
+
+
+
 end
+
+
+to go
+end
+
 @#$#@#$#@
 GRAPHICS-WINDOW
-229
+306
 10
-866
-648
+1364
+725
 -1
 -1
-19.061
+17.22
 1
 10
 1
 1
 1
 0
+0
+0
 1
-1
-1
--16
-16
--16
-16
+-30
+30
+-20
+20
 0
 0
 1
@@ -71,12 +117,12 @@ ticks
 30.0
 
 BUTTON
-19
-23
-121
-56
-inicio-manual
-inicio-manual
+8
+29
+77
+62
+inicio
+inicio
 NIL
 1
 T
@@ -88,63 +134,12 @@ NIL
 1
 
 BUTTON
-22
-70
-124
-103
-inicio-imagen
-inicio-imagen
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-22
 116
-131
-149
-inicio-imagen2
-inicio-imagen2
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-24
-166
-141
-199
-import-from-file
-inicio-file
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
 32
-226
-160
-259
-inicio-random
-inicio-random
+179
+65
+go
+go
 NIL
 1
 T

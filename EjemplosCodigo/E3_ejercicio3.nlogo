@@ -1,4 +1,3 @@
-
 breed[houses house]
 breed[humans human]
 directed-link-breed[streets street]
@@ -8,13 +7,13 @@ humans-own[speed]
 to setup
   clear-all
   ;; Create the houses
-  create-houses 10 [setxy random-xcor random-ycor
+  create-houses numero-de-casas [setxy random-xcor random-ycor
     set color red
     set shape "house"]
 
   ;; Create streets
   ask houses[
-    let num-links random 3
+    let num-links random max-calles
     repeat num-links[
       create-street-to one-of other houses
     ]
@@ -23,7 +22,7 @@ to setup
   ask patches[
     if (count houses-on self > 0) [
 
-      sprout-humans 1 [set color yellow
+      sprout-humans numero-personas [set color yellow
       set shape "dot"]
 
     ]
@@ -43,7 +42,7 @@ to step
       let possible-destinations out-street-neighbors
       ask humans-here[
       let destination one-of possible-destinations
-      let dest e
+
       set heading towards destination
       ]
     ]
@@ -63,16 +62,15 @@ to step
 
 end
 
-
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+232
 10
-647
-448
+920
+699
 -1
 -1
-13.0
+20.61
 1
 10
 1
@@ -125,6 +123,100 @@ NIL
 NIL
 NIL
 1
+
+BUTTON
+88
+67
+152
+100
+step
+step
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+12
+173
+194
+206
+numero-de-casas
+numero-de-casas
+0
+50
+50.0
+1
+1
+NIL
+HORIZONTAL
+
+INPUTBOX
+43
+236
+204
+296
+numero-personas
+1.0
+1
+0
+Number
+
+SLIDER
+30
+312
+202
+345
+max-calles
+max-calles
+0
+10
+8.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+912
+69
+1496
+329
+plot 1
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count humans with [speed > 0 ]"
+
+PLOT
+937
+347
+1490
+651
+Casas con humanos
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count houses with [count humans-here > 0 ]"
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -472,6 +564,30 @@ NetLogo 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="10" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>step</go>
+    <timeLimit steps="10000"/>
+    <metric>count humans with [speed &gt; 0]</metric>
+    <enumeratedValueSet variable="numero-de-casas">
+      <value value="5"/>
+      <value value="10"/>
+      <value value="15"/>
+      <value value="25"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="numero-personas">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-calles">
+      <value value="2"/>
+      <value value="3"/>
+      <value value="5"/>
+      <value value="8"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default

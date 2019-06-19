@@ -1,56 +1,72 @@
-;; Ejemplo introductorio (sin ABM) para ilustrar como se puede crear el entorno (en Netlogo: patches)
-;; Autor: Florian Chavez-Juarez
+breed[serpientes serpiente]
+
+serpientes-own[energia max-energia]
 
 
+to inicio
+  clear-all
+  reset-ticks
 
-;; Hacer todo manual trabajando con las coordenadas
-to inicio-manual
-  ask patches[
-   let suma ( pxcor + pycor)
-   ifelse (remainder suma 2 = 0) [
-     set pcolor white]
-    [set pcolor blue]
+  ; Iniciamos las serpientes
+  create-serpientes 5 [
+    set color green
+    setxy random-xcor random-ycor
+    set shape "caterpillar"
+    set size 3
+    set max-energia 10
+    set energia 0
+    set label energia
   ]
+
+  ask n-of 5 patches[
+    set pcolor yellow
+  ]
+
 end
 
-; Importar una imagen que netlogo convierte después al contexto (con cierta imprecisión)
-to inicio-imagen
-  import-pcolors-rgb "sugarscapeRed.png"
-end
-to inicio-imagen2
-  import-pcolors-rgb "labirinto3.png"
-end
+to go
+  tick
+  ask serpientes with [energia < max-energia][
+    let comida min-one-of (patches with [pcolor = yellow]) [distance myself]
+    set heading towards comida
+    forward 0.25
 
-; Crear un simple archivo con una matriz de numeros que se puede usar para poner el mundo
-to inicio-file
-  file-open "smallWorld2.txt"
-  foreach sort patches [ p ->
-    ask p [
-      let colorCode file-read
-      set pcolor colorCode
+
+
+    if ([pcolor] of patch-here = yellow) [
+      set energia energia + 1
+      set label energia
+      set size size + 0.5
+      ask patch-here[
+        set pcolor black
+      ]
+      ask one-of patches[
+        set pcolor yellow
+      ]
 
     ]
+
+
   ]
-  file-close
+
+;  if count (serpientes with [energia < max-energia]) = 0[
+;    stop]
+
+  ifelse any? (serpientes with [energia < max-energia]) [][stop]
 
 
-end
 
 
-to inicio-random
-ask patches[
-    set pcolor random-normal 50 10
-  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-229
+210
 10
-866
-648
+647
+448
 -1
 -1
-19.061
+13.0
 1
 10
 1
@@ -71,12 +87,12 @@ ticks
 30.0
 
 BUTTON
-19
-23
-121
-56
-inicio-manual
-inicio-manual
+21
+45
+95
+78
+Iniciar
+inicio
 NIL
 1
 T
@@ -88,64 +104,13 @@ NIL
 1
 
 BUTTON
-22
-70
-124
-103
-inicio-imagen
-inicio-imagen
-NIL
-1
+28
+90
+91
+123
+Go
+go
 T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-22
-116
-131
-149
-inicio-imagen2
-inicio-imagen2
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-24
-166
-141
-199
-import-from-file
-inicio-file
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-32
-226
-160
-259
-inicio-random
-inicio-random
-NIL
 1
 T
 OBSERVER
@@ -248,6 +213,22 @@ Polygon -16777216 true false 162 80 132 78 134 135 209 135 194 105 189 96 180 89
 Circle -7500403 true true 47 195 58
 Circle -7500403 true true 195 195 58
 
+caterpillar
+true
+0
+Polygon -7500403 true true 165 210 165 225 135 255 105 270 90 270 75 255 75 240 90 210 120 195 135 165 165 135 165 105 150 75 150 60 135 60 120 45 120 30 135 15 150 15 180 30 180 45 195 45 210 60 225 105 225 135 210 150 210 165 195 195 180 210
+Line -16777216 false 135 255 90 210
+Line -16777216 false 165 225 120 195
+Line -16777216 false 135 165 180 210
+Line -16777216 false 150 150 201 186
+Line -16777216 false 165 135 210 150
+Line -16777216 false 165 120 225 120
+Line -16777216 false 165 106 221 90
+Line -16777216 false 157 91 210 60
+Line -16777216 false 150 60 180 45
+Line -16777216 false 120 30 96 26
+Line -16777216 false 124 0 135 15
+
 circle
 false
 0
@@ -258,6 +239,13 @@ false
 0
 Circle -7500403 true true 0 0 300
 Circle -16777216 true false 30 30 240
+
+clock
+true
+0
+Circle -7500403 true true 30 30 240
+Polygon -16777216 true false 150 31 128 75 143 75 143 150 158 150 158 75 173 75
+Circle -16777216 true false 135 135 30
 
 cow
 false
