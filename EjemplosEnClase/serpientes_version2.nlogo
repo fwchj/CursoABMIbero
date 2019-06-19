@@ -1,58 +1,86 @@
-breed[serpientes serpiente]
+; Version 2 de nuestro modelo de clase donde agregamos varios elementos (con respecto a la version 1):
+; - La velocidad depende del nivel de energia
+; - Hay procreacion
+; - Agregamos parametros y graficas
+; - Las serpientes consumen energia caminando
 
-serpientes-own[energia max-energia]
+; Definimos el tipo de agente (serpiente)
+breed[serpientes serpiente]
+serpientes-own[energia max-energia] ; cada serpiente tiene un nivel de energia actual y el maximo nivel de energia
 
 
 to inicio
-  clear-all
-  reset-ticks
+  clear-all                             ; reseteamos todo
+  reset-ticks                           ; ponemos el contador de ticks a cero
 
   ; Iniciamos las serpientes
-  create-serpientes 5 [
-    set color green
-    setxy random-xcor random-ycor
-    set shape "caterpillar"
-    set size 3
-    set max-energia 10
-    set energia 0
-    set label energia
+  create-serpientes numero-serpientes [  ; creamos serpiente (el numero indicado por el usuario)
+    set color green                      ; cambiaos el color a verde
+    setxy random-xcor random-ycor        ; los posicionamos aleatoriamente en el mundo
+    set shape "caterpillar"              ; les ponemos forma de 'serpiente'
+    set size 3                           ; definimos un tamanio inicial
+    set max-energia 10                   ; definimos el nivel de energia maxima => procreacion
+    set energia 5                        ; nivel de energia inicial de cada serpiente
+    set label energia                    ; agregamos una etiqueta de la energia
   ]
 
-  ask n-of 5 patches[
+  ask n-of cantidad-comida patches[     ; definimos 'cantidad-comida' de patches como comida (color amarillo)
     set pcolor yellow
   ]
-
 end
 
 to go
-  tick
-  ask serpientes with [energia < max-energia][
-    let comida min-one-of (patches with [pcolor = yellow]) [distance myself]
-    set heading towards comida
-    forward 0.25
+  tick                                           ; agregamos una unidad al contador de ticks
+  ask serpientes [                               ; solicitamos una accion a todas las serpientes
+    let comida min-one-of (patches with [pcolor = yellow]) [distance myself] ; identificar la comida mas cercana
+    set heading towards comida                   ; dirigirse hacia la comida
+    forward 0.05 * energia                       ; caminar hacia la comida (velocidad en funcion del nivel de energia)
+
+    set energia energia - consumo-por-tick       ; reducimos en nivel de energia por 'consumo-por-tick'
+    set label precision energia 2                ; actualizamos la etiqueta
+
+    if (energia < 0 ) [ die ]                    ; si la energia es negativa, se muere la serpiente
 
 
 
-    if ([pcolor] of patch-here = yellow) [
-      set energia energia + 1
-      set label energia
-      set size size + 0.5
-      ask patch-here[
+    if ([pcolor] of patch-here = yellow) [       ; en caso de estar en un patch con comida, agregamos energia
+      set energia energia + ganancia-por-comida  ; agregamos la energia a la serpiente
+      set label energia                          ; actualizamos la etiqueta
+
+      ask patch-here[                            ; ponemos el patch en negro (ya no hay comida)
         set pcolor black
       ]
       ask one-of patches[
-        set pcolor yellow
+        set pcolor yellow                        ; seleccionamos otro patch como comida
+      ]
+
+      ; Ver si hay procreacion
+      if energia >= max-energia [                ; ver si la condicion de procreacion se satisface
+        set energia energia / 2                  ; dividimos la energia en 2
+        let energiaActual energia
+        ask patch-here[
+          sprout-serpientes 1 [                  ; generamos una nueva serpiente y ponemos los valores iniciales
+            forward 3
+            set shape "caterpillar"
+            set energia energiaActual
+            set size (2 + 0.5 * energia)
+            set label energia
+            set color green
+          ]
+      ]
       ]
 
     ]
 
+    set size (2 + 0.5 * energia)               ; actualizamos el tamaño de la serpiente
+
 
   ]
 
-;  if count (serpientes with [energia < max-energia]) = 0[
-;    stop]
 
-  ifelse any? (serpientes with [energia < max-energia]) [][stop]
+
+
+if count (serpientes with [energia < max-energia]) = 0 [stop]
 
 
 
@@ -119,6 +147,102 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+12
+157
+206
+190
+numero-serpientes
+numero-serpientes
+0
+10
+8.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+15
+210
+192
+243
+cantidad-comida
+cantidad-comida
+0
+30
+30.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+1070
+36
+1614
+372
+Counter
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Snake count" 1.0 0 -16777216 true "" "plot count serpientes"
+"Total size" 1.0 0 -2674135 true "" "plot sum [size] of serpientes"
+
+SLIDER
+14
+248
+195
+281
+consumo-por-tick
+consumo-por-tick
+0
+2
+0.1
+0.1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+106
+90
+169
+123
+go
+go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+-2
+308
+211
+341
+ganancia-por-comida
+ganancia-por-comida
+0
+3
+2.0
+0.25
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
