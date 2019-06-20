@@ -3,7 +3,12 @@
 breed[personas persona]
 breed[empresas empresa]
 
-personas-own[mujer? capacidades preferencias ]
+personas-own[
+  mujer?          ; variable binaria para indicar si es mujer
+  capacidades
+  preferencias    ; minimo de porentaje de colegas del mismo genero
+  salario-reserva ;
+]
 empresas-own[
   salario-promedio
   sector
@@ -47,6 +52,12 @@ to inicio
       setxy (min-pxcor / 2 + (random-float min-pxcor) / 2) random-ycor
       set size 2
     ]
+
+    set max-iguales (max max-iguales min-iguales)
+    set preferencias min-iguales  + random-float (max-iguales - min-iguales)
+    set salario-reserva 6000
+
+
   ]
 
 
@@ -109,13 +120,52 @@ to remplazar-un-contrato
     ]
 
     ; Agregamos un nuevo contrato
-    create-contrato-to one-of personas with [(count my-in-contratos = 0) ][
-            set salario [salario-promedio] of myself
-            set label salario
-           ]
+   ; create-contrato-to one-of personas with [(count my-in-contratos = 0) ][
+     ;       set salario [salario-promedio] of myself
+     ;       set label salario
+    ;]
+
+    ; Vemos si la persona acepta
+    if any? personas with [(count my-in-contratos = 0) ][
+    let seguir-buscando true
+    ask personas with [(count my-in-contratos = 0) ][
+      if(seguir-buscando)[ ;nos preguntamos si todavia hay que buscar mas
+          if (oferta-trabajo myself 7000)[
+             create-contrato-from myself   ; creamos el contrato
+             set seguir-buscando false     ; aqui indicamos que ya no hay que buscar mas
+          ] ; end if : ACEPTA OFERTA
+        ] ; end if: seguir-buscando
+      ]
+    ]
 
   ]
 end
+
+; Metodo que regresa true si la persona acepta el trabajo y false si lo rechaza
+to-report oferta-trabajo [firm salary]
+  let respuesta true
+
+  ; Verificamos la condicion de salario
+  if (salary < [salario-reserva] of self)[ set respuesta false]
+
+  ; Verificamos la condicion de porcentaje de colegas del mismo genero
+  let total [count out-contrato-neighbors] of firm
+  let mujeres [count out-contrato-neighbors with [mujer?]] of firm
+  let prop 0.5
+  if (total > 0 )
+    [set prop  mujeres / total]
+
+
+  ; Definimos el umbral en terminos de cuan
+  ifelse ([mujer?] of self)
+     [if prop < preferencias [set respuesta false]]          ; mujeres
+     [if ((1 - prop ) < preferencias) [set respuesta false]] ; hombres
+
+  report respuesta
+  ;show (word "Soy mujer:" ([mujer?] of self) ". Oferta con salario " salary " de una empresa con " (100 * prop) " % mujeres. Tengo preferencias " preferencias " => " respuesta)
+end
+
+
 
 
 
@@ -224,6 +274,53 @@ false
 "" ""
 PENS
 "default" 0.1 1 -16777216 true "" "histogram [porcentaje-mujeres] of empresas"
+
+BUTTON
+159
+99
+222
+132
+go
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+15
+171
+187
+204
+min-iguales
+min-iguales
+0
+1
+0.3
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+16
+215
+188
+248
+max-iguales
+max-iguales
+0
+1
+0.3
+0.05
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
