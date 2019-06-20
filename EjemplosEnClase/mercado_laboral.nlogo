@@ -8,7 +8,8 @@ empresas-own[
   salario-promedio
   sector
   brecha
-  prefencia-mujeres ; Porcentaje de mujeres que quiere contratar (0.5 seria el valor neutro)
+  preferencia-mujeres ; Porcentaje de mujeres que quiere contratar (0.5 seria el valor neutro)
+  porcentaje-mujeres
 ]
 
 directed-link-breed[contratos contrato]
@@ -17,19 +18,19 @@ contratos-own[salario]
 to inicio
   clear-all
   reset-ticks
-  resize-world -30 30 -20 20
+  resize-world -30 30 -25 25
 
   ; Generamos empresas
   create-empresas 10[
-    setxy 0 random-ycor
     set shape "house"
     set size 3
     set salario-promedio 5000 + random 5000
-    set prefencia-mujeres random-float 1
-    set label precision prefencia-mujeres 3
+    set preferencia-mujeres random-float 1
+    setxy 0 (min-pycor + preferencia-mujeres * (max-pycor - min-pycor)) ; definimos la posición vertical en función de la preferncia por mujeres
+    set label precision preferencia-mujeres 3
     set color yellow                                   ; color neutro
-    if (prefencia-mujeres < 0.3) [ set color blue]      ; color para indicar prefencia fuerte para mujeres
-    if (prefencia-mujeres > 0.7) [ set color red]     ; color para indicar prefencia fuerte para hombres
+    if (preferencia-mujeres < 0.3) [ set color blue]      ; color para indicar prefencia fuerte para mujeres
+    if (preferencia-mujeres > 0.7) [ set color red]     ; color para indicar prefencia fuerte para hombres
   ]
 
   ; Generar personas
@@ -38,12 +39,12 @@ to inicio
 
     ifelse mujer? [
       set color red
-      setxy (random-float max-pxcor) random-ycor
+      setxy (max-pxcor / 2 + ((random-float max-pxcor) / 2)) random-ycor
       set size 2
     ]
     [
       set color (93 + random-float 5)
-      setxy (random-float min-pxcor) random-ycor
+      setxy (min-pxcor / 2 + (random-float min-pxcor) / 2) random-ycor
       set size 2
     ]
   ]
@@ -53,7 +54,7 @@ to inicio
   ask empresas[
 
     repeat 8[
-      let contrato-mujer? (random-float 1 <= prefencia-mujeres)
+      let contrato-mujer? (random-float 1 <= preferencia-mujeres)
       ifelse contrato-mujer? [
         if any? personas with [mujer? = true and (count my-in-contratos = 0) ] [
           create-contrato-to one-of personas with [mujer? = true and (count my-in-contratos = 0) ] [
@@ -76,24 +77,62 @@ to inicio
 
 
   ]
-
-
-
-
-
-
 end
+
+
 
 
 to go
+  actualizar-estadistica-empresa
+  remplazar-un-contrato
+  tick
 end
+
+; Funciona para calcular el porcentaje de mujeres en cada empresa
+to actualizar-estadistica-empresa
+  ask empresas[
+    let total count out-contrato-neighbors
+    let numero-mujeres count out-contrato-neighbors with [mujer?]
+    if (total > 0 )[
+      set porcentaje-mujeres numero-mujeres / total
+      show (word numero-mujeres " / " total " = " porcentaje-mujeres)
+    ]
+
+  ]
+end
+
+to remplazar-un-contrato
+  ask empresas[
+    ; Quitar un contrato
+    if (any? my-out-contratos)[
+      ask one-of my-out-contratos[ die ]
+    ]
+
+    ; Agregamos un nuevo contrato
+    create-contrato-to one-of personas with [(count my-in-contratos = 0) ][
+            set salario [salario-promedio] of myself
+            set label salario
+           ]
+
+  ]
+end
+
+
+
+
+
+
+
+
+
+
 
 @#$#@#$#@
 GRAPHICS-WINDOW
 306
 10
 1364
-725
+896
 -1
 -1
 17.22
@@ -108,8 +147,8 @@ GRAPHICS-WINDOW
 1
 -30
 30
--20
-20
+-25
+25
 0
 0
 1
@@ -149,6 +188,42 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+1363
+18
+1769
+321
+Proporcion de mujeres
+NIL
+NIL
+0.0
+100.0
+0.0
+10.0
+false
+true
+"" ""
+PENS
+"default" 10.0 1 -16777216 true "" "histogram [100 * porcentaje-mujeres] of empresas"
+
+PLOT
+1366
+327
+1776
+585
+plot 1
+NIL
+NIL
+0.0
+1.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 0.1 1 -16777216 true "" "histogram [porcentaje-mujeres] of empresas"
 
 @#$#@#$#@
 ## WHAT IS IT?
