@@ -53,7 +53,7 @@ to inicio
       set size 2
     ]
 
-    set max-iguales (max max-iguales min-iguales)
+    set max-iguales (max list max-iguales min-iguales)
     set preferencias min-iguales  + random-float (max-iguales - min-iguales)
     set salario-reserva 6000
 
@@ -119,11 +119,7 @@ to remplazar-un-contrato
       ask one-of my-out-contratos[ die ]
     ]
 
-    ; Agregamos un nuevo contrato
-   ; create-contrato-to one-of personas with [(count my-in-contratos = 0) ][
-     ;       set salario [salario-promedio] of myself
-     ;       set label salario
-    ;]
+
 
     ; Vemos si la persona acepta
     if any? personas with [(count my-in-contratos = 0) ][
@@ -176,13 +172,12 @@ end
 
 
 
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 306
 10
 1364
-896
+897
 -1
 -1
 17.22
@@ -301,7 +296,7 @@ min-iguales
 min-iguales
 0
 1
-0.3
+0.0
 0.05
 1
 NIL
@@ -316,7 +311,7 @@ max-iguales
 max-iguales
 0
 1
-0.3
+0.0
 0.05
 1
 NIL
