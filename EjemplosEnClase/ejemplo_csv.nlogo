@@ -70,6 +70,23 @@ NIL
 NIL
 1
 
+BUTTON
+108
+34
+196
+67
+clear all
+clear-all
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
 @#$#@#$#@
 ## WHAT IS IT?
 
