@@ -1,5 +1,6 @@
+50,50
 name,xcor,ycor,color,size,shape
 A,-3,-3,35,5,"car"
 B,3,3,45,8,"house"
-C,-2,5,65,4,"bug"
+"Mi nombre",-15,5,65,10,"bug"
 D,5,-2,15,4,"circle"

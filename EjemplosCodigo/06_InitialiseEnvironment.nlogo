@@ -18,7 +18,7 @@ to inicio-imagen
   import-pcolors-rgb "sugarscapeRed.png"
 end
 to inicio-imagen2
-  import-pcolors-rgb "labirinto3.png"
+  import-pcolors-rgb "maze.png"
 end
 
 ; Crear un simple archivo con una matriz de numeros que se puede usar para poner el mundo

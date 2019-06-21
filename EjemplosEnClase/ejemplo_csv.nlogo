@@ -4,10 +4,18 @@ to setup
   clear-all
   file-close-all                              ; Close any files open from last run
   file-open "ejemplo_csv_data.csv"
-
   let data csv:from-row file-read-line ; skip first line
+  show data
+
+  let xsize item 0 data
+  let ysize item 1 data
+  resize-world (- xsize) xsize (- ysize) ysize
+  ;resize-world -(item 0 data) (item 0 data) -(item 1 data) (item 1 data)
+
+  set data csv:from-row file-read-line ; skip first line
   while [ not file-at-end? ] [
     let row csv:from-row file-read-line
+    show row
     create-turtles 1[
       ; Ponemos una etiqueta (se encuentra en la posicion 0)
       set label (word (item 0 row))
@@ -29,8 +37,8 @@ end
 GRAPHICS-WINDOW
 210
 10
-751
-552
+1531
+1332
 -1
 -1
 13.0
@@ -40,13 +48,13 @@ GRAPHICS-WINDOW
 1
 1
 0
+0
+0
 1
-1
-1
--20
-20
--20
-20
+-50
+50
+-50
+50
 0
 0
 1
