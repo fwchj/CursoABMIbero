@@ -26,7 +26,9 @@ to inicio-file
   file-open "smallWorld2.txt"
   foreach sort patches [ p ->
     ask p [
+
       let colorCode file-read
+      print(colorCode)
       set pcolor colorCode
 
     ]
